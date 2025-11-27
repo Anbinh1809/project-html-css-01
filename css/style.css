@@ -37,7 +37,7 @@ li{
     padding-top: 44px;
     padding-bottom: 44px;
 }
-.header .main-content{
+.main-content{
     width: 1170px;
     margin-left: auto; /*đưa nội dung sang bên phải*/
     margin-right: auto; /*Có cả 2 dòng này là căn giữa*/
@@ -100,4 +100,69 @@ li{
     -o-border-radius: 24.5px;
     text-align: center;
     margin-left: 49px;
+}
+/* Hero */
+.hero{
+    background: var(--background-color);
+}
+
+.hero .main-content{
+    display: flex;
+}
+
+.hero .left-box{
+    width: 48.7%;
+}
+
+.hero .left-box > img{
+    width: 470px;
+    height: 685px;
+    border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    -ms-border-radius: 20px;
+    -o-border-radius: 20px;
+}
+
+.hero .left-box .summary{
+    width: 270px;
+    height: 244px;
+    background-color: #fff;
+    border-radius: 12px;
+    -webkit-border-radius: 12px;
+    -moz-border-radius: 12px;
+    -ms-border-radius: 12px;
+    -o-border-radius: 12px;
+    padding: 24px;
+}
+
+.hero .left-box .item{
+    display: flex;
+    margin: 7px 0; /*top bottom 7px và left rright: 0*/
+    margin-top :7px ;
+}
+
+.hero .left-box span{
+    display: block;
+}
+
+.hero .left-box .icon{
+    margin-right: 16px;
+    width: 48px;
+    height: 48px;
+}
+
+.hero .left-box .course-content span:first-child{
+    font-size: 1.4rem;
+    line-height: 26px;
+}
+
+.hero .left-box .course-content span:last-child{
+    font-weight: 600;
+    font-size: 1.8rem;
+    line-height: 30px;
+}
+
+.hero .right-box{
+    width: 51.3%;
 }
