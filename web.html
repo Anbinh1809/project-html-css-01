@@ -1,0 +1,2096 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>NovelRich | Đọc Truyện Làm Giàu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Nunito:wght@400;600;700&family=Roboto+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Nunito", "sans-serif"],
+              serif: ["Merriweather", "serif"],
+              mono: ["Roboto Mono", "monospace"],
+            },
+            colors: {
+              brand: "#10b981",
+              "brand-dark": "#047857",
+              bg: "#f3f4f6",
+              paper: "#ffffff",
+              dark: "#111827",
+              gold: "#fbbf24",
+            },
+            animation: {
+              "spin-slow": "spin 3s linear infinite",
+              "bounce-in":
+                "bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+              "pulse-glow": "pulseGlow 2s infinite",
+              float: "float 3s ease-in-out infinite",
+              "slide-in-right": "slideInRight 0.3s ease-out forwards",
+            },
+            keyframes: {
+              bounceIn: {
+                "0%": { transform: "scale(0.3)", opacity: "0" },
+                "50%": { transform: "scale(1.05)", opacity: "1" },
+                "70%": { transform: "scale(0.9)" },
+                "100%": { transform: "scale(1)" },
+              },
+              pulseGlow: {
+                "0%, 100%": { boxShadow: "0 0 5px #10b981" },
+                "50%": { boxShadow: "0 0 20px #10b981" },
+              },
+              float: {
+                "0%, 100%": { transform: "translateY(0)" },
+                "50%": { transform: "translateY(-10px)" },
+              },
+              slideInRight: {
+                "0%": { transform: "translateX(100%)", opacity: "0" },
+                "100%": { transform: "translateX(0)", opacity: "1" },
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #f3f4f6;
+        color: #1f2937;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+        transition: background-color 0.5s, color 0.5s;
+      }
+
+      body.night-mode {
+        background-color: #111827;
+        color: #e5e7eb;
+      }
+      body.night-mode header {
+        background-color: #1f2937;
+        border-color: #374151;
+      }
+      body.night-mode .bg-white {
+        background-color: #1f2937;
+        color: #e5e7eb;
+        border-color: #374151;
+      }
+      body.night-mode nav {
+        background-color: #1f2937;
+        border-color: #374151;
+      }
+      body.night-mode input,
+      body.night-mode textarea,
+      body.night-mode select {
+        background-color: #374151;
+        color: white;
+        border-color: #4b5563;
+      }
+
+      .theme-light {
+        background-color: #ffffff;
+        color: #111827;
+      }
+      .theme-sepia {
+        background-color: #f5e6c8;
+        color: #433422;
+      }
+      .theme-dark {
+        background-color: #111827;
+        color: #d1d5db;
+      }
+      .theme-dark .reader-control {
+        background-color: #1f2937;
+        border-color: #374151;
+        color: #fff;
+      }
+
+      ::-webkit-scrollbar {
+        width: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      .theme-dark ::-webkit-scrollbar-thumb {
+        background: #4b5563;
+      }
+
+      .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .modal {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(0.95);
+        z-index: 100;
+      }
+      .modal.active {
+        opacity: 1;
+        pointer-events: auto;
+        transform: scale(1);
+      }
+      .wheel-container {
+        position: relative;
+        width: 280px;
+        height: 280px;
+        margin: 0 auto;
+        transition: transform 4s cubic-bezier(0.25, 0.1, 0.25, 1);
+      }
+      .tree-stage {
+        transition: all 0.5s ease;
+      }
+      .provider-btn.active {
+        border-color: #10b981;
+        background-color: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+      }
+
+      #toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        pointer-events: none;
+      }
+      .toast {
+        pointer-events: auto;
+        min-width: 250px;
+        background: white;
+        border-left: 4px solid #10b981;
+        padding: 12px 16px;
+        border-radius: 4px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        font-size: 14px;
+        animation: slideInRight 0.3s ease-out forwards;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      body.night-mode .toast {
+        background: #1f2937;
+        color: white;
+      }
+      .toast.error {
+        border-left-color: #ef4444;
+      }
+      .toast.info {
+        border-left-color: #3b82f6;
+      }
+    </style>
+  </head>
+  <body
+    class="flex flex-col h-screen overflow-hidden transition-colors duration-500"
+  >
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container"></div>
+
+    <!-- AUTH MODAL -->
+    <div
+      id="auth-modal"
+      class="fixed inset-0 bg-gradient-to-br from-brand-dark to-gray-900 z-[200] flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white dark:bg-gray-800 w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden"
+      >
+        <div class="p-8">
+          <div class="text-center mb-8">
+            <div
+              class="inline-flex items-center justify-center w-16 h-16 bg-brand rounded-2xl text-white text-3xl font-bold mb-4 shadow-lg shadow-brand/40"
+            >
+              N
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-white">
+              Novel<span class="text-brand">Rich</span>
+            </h1>
+            <p class="text-gray-500 text-sm">Đọc truyện - Tích lũy - Đổi quà</p>
+          </div>
+          <div class="flex border-b border-gray-200 dark:border-gray-700 mb-6">
+            <button
+              onclick="switchAuthMode('login')"
+              id="tab-login"
+              class="flex-1 pb-2 text-brand border-b-2 border-brand font-bold text-sm transition"
+            >
+              Đăng Nhập
+            </button>
+            <button
+              onclick="switchAuthMode('register')"
+              id="tab-register"
+              class="flex-1 pb-2 text-gray-400 font-bold text-sm hover:text-gray-600 transition"
+            >
+              Đăng Ký
+            </button>
+          </div>
+          <form onsubmit="handleAuth(event)" class="space-y-4">
+            <div>
+              <label
+                class="block text-xs font-bold text-gray-500 mb-1 uppercase"
+                >Tên tài khoản</label
+              ><input
+                type="text"
+                id="auth-username"
+                class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm outline-none transition text-gray-800 dark:text-white bg-white dark:bg-gray-700 focus:border-brand"
+                placeholder="Nhập tên đăng nhập..."
+                required
+              />
+            </div>
+            <div>
+              <label
+                class="block text-xs font-bold text-gray-500 mb-1 uppercase"
+                >Mật khẩu</label
+              ><input
+                type="password"
+                id="auth-password"
+                class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm outline-none transition text-gray-800 dark:text-white bg-white dark:bg-gray-700 focus:border-brand"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+            <div id="register-extra" class="hidden">
+              <label
+                class="block text-xs font-bold text-gray-500 mb-1 uppercase"
+                >Nhập lại mật khẩu</label
+              ><input
+                type="password"
+                id="auth-confirm-pass"
+                class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm outline-none transition text-gray-800 dark:text-white bg-white dark:bg-gray-700 focus:border-brand"
+                placeholder="••••••••"
+              />
+            </div>
+            <button
+              type="submit"
+              id="auth-btn"
+              class="w-full bg-brand text-white font-bold py-3 rounded-lg hover:bg-brand-dark transition shadow-lg shadow-brand/30 mt-2"
+            >
+              Đăng Nhập Ngay
+            </button>
+          </form>
+          <p
+            id="auth-msg"
+            class="text-center text-xs text-red-500 mt-4 h-4"
+          ></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- APP HEADER -->
+    <header
+      class="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 z-20 shadow-sm flex-shrink-0 transition-colors"
+    >
+      <div
+        class="flex items-center gap-2 cursor-pointer"
+        onclick="switchTab('library')"
+      >
+        <div
+          class="w-8 h-8 bg-brand rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-brand/30"
+        >
+          N
+        </div>
+        <h1
+          class="font-bold text-xl tracking-tight text-gray-800 hidden md:block dark:text-white"
+        >
+          Novel<span class="text-brand">Rich</span>
+        </h1>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <div
+          id="battery-badge"
+          class="hidden text-[10px] font-bold px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 flex items-center gap-1 transition-all border border-gray-200 dark:border-gray-700"
+        >
+          <i class="fa-solid fa-battery-full"></i>
+          <span id="battery-text">100%</span>
+        </div>
+        <div
+          id="golden-hour-badge"
+          class="hidden bg-yellow-400 text-black text-[10px] font-bold px-2 py-1 rounded animate-pulse shadow-lg shadow-yellow-400/50"
+        >
+          <i class="fa-solid fa-bolt"></i> GIỜ VÀNG X2
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div
+          class="flex items-center gap-1.5 bg-yellow-50 dark:bg-yellow-900/20 px-3 py-1.5 rounded-full border border-yellow-200 dark:border-yellow-800 cursor-pointer hover:bg-yellow-100 transition"
+          onclick="switchTab('wallet')"
+        >
+          <i class="fa-solid fa-coins text-yellow-500 animate-pulse"></i>
+          <span
+            id="user-coin"
+            class="font-bold text-yellow-700 dark:text-yellow-400 font-mono text-sm"
+            >0</span
+          >
+        </div>
+        <div class="relative group cursor-pointer" onclick="toggleUserMenu()">
+          <div class="flex items-center gap-2">
+            <div class="text-right hidden sm:block">
+              <div
+                class="text-xs font-bold text-gray-700 dark:text-gray-200"
+                id="header-username"
+              >
+                Guest
+              </div>
+              <div class="text-[10px] text-brand">Level 1</div>
+            </div>
+            <div
+              class="w-9 h-9 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden border border-gray-300 dark:border-gray-600"
+            >
+              <img
+                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                class="w-full h-full"
+                id="header-avatar"
+              />
+            </div>
+          </div>
+          <div
+            id="user-menu"
+            class="absolute right-0 top-12 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 hidden p-2 z-50"
+          >
+            <button
+              onclick="openLeaderboard()"
+              class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg"
+            >
+              <i class="fa-solid fa-ranking-star mr-2 text-yellow-500"></i> Bảng
+              Xếp Hạng
+            </button>
+            <button
+              onclick="switchTab('wallet')"
+              class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg"
+            >
+              <i class="fa-solid fa-wallet mr-2 text-gray-400"></i> Ví của tôi
+            </button>
+            <button
+              onclick="logout()"
+              class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg"
+            >
+              <i class="fa-solid fa-right-from-bracket mr-2"></i> Đăng xuất
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main
+      class="flex-1 overflow-y-auto relative custom-scrollbar bg-gray-50 dark:bg-gray-900"
+      id="main-container"
+    >
+      <!-- TAB 1: LIBRARY -->
+      <section id="tab-library" class="p-4 pb-24 max-w-3xl mx-auto">
+        <div
+          class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-4 text-white mb-6 shadow-lg flex justify-between items-center cursor-pointer hover:shadow-xl transition"
+          onclick="openCheckinModal()"
+        >
+          <div>
+            <h3 class="font-bold text-lg">
+              <i class="fa-solid fa-calendar-check mr-2"></i>Điểm Danh
+            </h3>
+            <p class="text-xs text-blue-200">
+              Chuỗi: <span id="banner-streak">0</span> ngày
+            </p>
+          </div>
+          <div
+            class="bg-white/20 p-2 rounded-lg backdrop-blur-sm animate-pulse-glow"
+          >
+            <span class="font-bold text-yellow-300">Nhận Quà</span>
+          </div>
+        </div>
+
+        <div class="relative mb-4">
+          <input
+            type="text"
+            id="search-input"
+            oninput="handleSearch(this.value)"
+            placeholder="Tìm kiếm truyện, tác giả..."
+            class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl py-3 pl-10 pr-4 text-sm focus:border-brand focus:ring-1 focus:ring-brand outline-none shadow-sm transition text-gray-800 dark:text-white placeholder-gray-400"
+          />
+          <i
+            class="fa-solid fa-search absolute left-3.5 top-3.5 text-gray-400"
+          ></i>
+        </div>
+
+        <div
+          class="flex gap-2 overflow-x-auto pb-2 mb-4 hide-scroll"
+          id="category-list"
+        >
+          <button
+            onclick="filterNovels('all')"
+            class="category-btn active px-4 py-1.5 bg-brand text-white rounded-full text-xs font-bold whitespace-nowrap shadow-md transition transform active:scale-95"
+            data-cat="all"
+          >
+            Tất cả
+          </button>
+          <button
+            onclick="filterNovels('Tiên Hiệp')"
+            class="category-btn px-4 py-1.5 bg-white text-gray-600 border border-gray-200 rounded-full text-xs font-bold whitespace-nowrap hover:bg-gray-50 transition"
+            data-cat="Tiên Hiệp"
+          >
+            Tiên Hiệp
+          </button>
+          <button
+            onclick="filterNovels('Ngôn Tình')"
+            class="category-btn px-4 py-1.5 bg-white text-gray-600 border border-gray-200 rounded-full text-xs font-bold whitespace-nowrap hover:bg-gray-50 transition"
+            data-cat="Ngôn Tình"
+          >
+            Ngôn Tình
+          </button>
+          <button
+            onclick="filterNovels('Sáng Tác')"
+            class="category-btn px-4 py-1.5 bg-purple-100 text-purple-700 border border-purple-200 rounded-full text-xs font-bold whitespace-nowrap hover:bg-purple-200 transition"
+            data-cat="Sáng Tác"
+          >
+            Sáng Tác
+          </button>
+        </div>
+
+        <div class="space-y-4 min-h-[300px]" id="novel-list"></div>
+
+        <div class="mt-8 text-center pb-8">
+          <button
+            onclick="openStudioModal()"
+            class="text-brand font-bold text-sm hover:underline decoration-dashed flex items-center gap-2 mx-auto bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-sm border border-gray-200 dark:border-gray-700"
+          >
+            <i class="fa-solid fa-pen-nib"></i> Trở thành Tác Giả
+          </button>
+        </div>
+      </section>
+
+      <!-- TAB 2: WHEEL -->
+      <section
+        id="tab-wheel"
+        class="hidden h-full flex flex-col items-center justify-center p-4 relative bg-slate-900 overflow-hidden"
+      >
+        <div
+          class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')] opacity-10"
+        ></div>
+        <h2
+          class="text-3xl font-bold text-yellow-400 mb-2 z-10 drop-shadow-lg uppercase tracking-widest font-serif"
+        >
+          Vòng Quay Tỷ Phú
+        </h2>
+        <div
+          class="bg-white/10 backdrop-blur-md px-4 py-1 rounded-full text-white text-xs mb-8 z-10 border border-white/20"
+        >
+          Phí quay: <span class="text-red-400 font-bold">2,000 Xu</span> / lượt
+        </div>
+        <div class="relative z-10 mb-8 scale-90 md:scale-100">
+          <div
+            class="w-72 h-72 rounded-full border-4 border-yellow-500 shadow-[0_0_30px_rgba(234,179,8,0.5)] bg-slate-800 relative overflow-hidden transition-transform duration-[4000ms] ease-[cubic-bezier(0.25,0.1,0.25,1)]"
+            id="wheel"
+          >
+            <svg
+              viewBox="0 0 100 100"
+              class="w-full h-full transform -rotate-90"
+            >
+              <path d="M50 50 L50 0 A50 50 0 0 1 85.3 14.6 Z" fill="#ef4444" />
+              <path
+                d="M50 50 L85.3 14.6 A50 50 0 0 1 100 50 Z"
+                fill="#3b82f6"
+              />
+              <path
+                d="M50 50 L100 50 A50 50 0 0 1 85.3 85.3 Z"
+                fill="#22c55e"
+              />
+              <path
+                d="M50 50 L85.3 85.3 A50 50 0 0 1 50 100 Z"
+                fill="#eab308"
+              />
+              <path
+                d="M50 50 L50 100 A50 50 0 0 1 14.6 85.3 Z"
+                fill="#a855f7"
+              />
+              <path d="M50 50 L14.6 85.3 A50 50 0 0 1 0 50 Z" fill="#f97316" />
+              <path d="M50 50 L0 50 A50 50 0 0 1 14.6 14.6 Z" fill="#6366f1" />
+              <path d="M50 50 L14.6 14.6 A50 50 0 0 1 50 0 Z" fill="#ec4899" />
+            </svg>
+          </div>
+          <div
+            class="absolute -top-4 left-1/2 transform -translate-x-1/2 text-white text-4xl drop-shadow-md"
+          >
+            <i class="fa-solid fa-caret-down"></i>
+          </div>
+          <button
+            onclick="spinWheel()"
+            id="spin-btn"
+            class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full border-4 border-white shadow-xl flex items-center justify-center font-bold text-white text-sm hover:scale-105 transition active:scale-95 z-20"
+          >
+            QUAY
+          </button>
+        </div>
+        <div
+          class="flex gap-4 z-10 bg-black/40 p-3 rounded-xl backdrop-blur-sm border border-white/10 w-full max-w-xs justify-around"
+        >
+          <div class="text-center">
+            <div class="text-xs text-gray-400">Mảnh Thẻ</div>
+            <div class="font-bold text-white text-lg">
+              <span id="frag-count">0</span>/100
+            </div>
+          </div>
+          <div class="w-px bg-white/20"></div>
+          <div class="text-center">
+            <div class="text-xs text-gray-400">Tài sản</div>
+            <div class="font-bold text-yellow-400 text-lg" id="wheel-balance">
+              0
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: WALLET & GARDEN -->
+      <section
+        id="tab-wallet"
+        class="hidden p-4 pb-24 max-w-2xl mx-auto space-y-6"
+      >
+        <!-- MONEY TREE -->
+        <div
+          class="bg-gradient-to-b from-blue-900 to-slate-900 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden group"
+        >
+          <div class="absolute top-0 right-0 p-3 opacity-20">
+            <i class="fa-solid fa-tree text-8xl"></i>
+          </div>
+          <div class="relative z-10">
+            <div class="flex justify-between items-start">
+              <div>
+                <h3 class="font-bold text-xl text-green-400 mb-1">
+                  Cây Kim Tiền
+                </h3>
+                <p class="text-xs text-gray-400" id="tree-status">
+                  Đang phát triển...
+                </p>
+              </div>
+              <div
+                class="bg-white/10 px-2 py-1 rounded text-xs"
+                id="water-count"
+              >
+                💧 0/10
+              </div>
+            </div>
+            <div
+              class="h-40 flex items-center justify-center my-4 animate-float"
+            >
+              <div
+                id="tree-visual"
+                class="text-6xl transition-all duration-1000"
+              >
+                🌱
+              </div>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2 mb-4">
+              <div
+                id="tree-progress"
+                class="bg-green-500 h-2 rounded-full transition-all duration-500"
+                style="width: 0%"
+              ></div>
+            </div>
+            <div class="flex gap-2">
+              <button
+                onclick="waterTree()"
+                class="flex-1 bg-blue-600 hover:bg-blue-500 py-2 rounded-lg font-bold text-sm transition flex items-center justify-center gap-2"
+              >
+                <i class="fa-solid fa-droplet"></i> Tưới Nước
+              </button>
+              <button
+                onclick="harvestTree()"
+                id="btn-harvest"
+                class="flex-1 bg-yellow-600 hover:bg-yellow-500 py-2 rounded-lg font-bold text-sm transition flex items-center justify-center gap-2 opacity-50 cursor-not-allowed"
+                disabled
+              >
+                <i class="fa-solid fa-sack-dollar"></i> Thu Hoạch
+              </button>
+            </div>
+            <p class="text-[10px] text-gray-500 mt-2 text-center">
+              * Cây lớn theo thời gian thực ngoài đời (1 giờ = 1 Giai đoạn)
+            </p>
+          </div>
+        </div>
+
+        <!-- NIGHT MARKET -->
+        <div
+          id="night-market-panel"
+          class="hidden bg-gradient-to-r from-purple-900 to-black rounded-2xl p-5 border border-purple-500/50 shadow-[0_0_20px_#a855f7] relative overflow-hidden"
+        >
+          <div
+            class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30"
+          ></div>
+          <div class="relative z-10">
+            <div class="flex justify-between items-center mb-4">
+              <h3
+                class="font-bold text-purple-300 text-lg animate-neon-flicker"
+              >
+                🌙 CHỢ ĐÊM BÍ ẨN
+              </h3>
+              <span
+                class="text-[10px] bg-purple-800 text-purple-200 px-2 py-1 rounded border border-purple-500"
+                >Mở: 20h - 05h</span
+              >
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div
+                onclick="buyItem('fragment_pack', 5000)"
+                class="bg-black/50 p-3 rounded border border-purple-700 hover:bg-purple-900/50 cursor-pointer transition text-center"
+              >
+                <div class="text-2xl mb-1">🧩</div>
+                <div class="text-xs font-bold text-purple-200">
+                  Gói 5 Mảnh Thẻ
+                </div>
+                <div class="text-[10px] text-yellow-400">5.000 Xu</div>
+              </div>
+              <div
+                onclick="buyItem('energy_drink', 3000)"
+                class="bg-black/50 p-3 rounded border border-purple-700 hover:bg-purple-900/50 cursor-pointer transition text-center"
+              >
+                <div class="text-2xl mb-1">🧪</div>
+                <div class="text-xs font-bold text-purple-200">
+                  Thuốc Tăng Lực
+                </div>
+                <div class="text-[10px] text-yellow-400">3.000 Xu</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Creator Dashboard -->
+        <div
+          class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-purple-200 dark:border-purple-900 shadow-sm relative overflow-hidden"
+        >
+          <div class="absolute top-0 right-0 p-3 opacity-10">
+            <i class="fa-solid fa-feather-pointed text-6xl text-purple-600"></i>
+          </div>
+          <h3 class="font-bold text-purple-800 dark:text-purple-400 mb-2">
+            Thu Nhập Tác Giả
+          </h3>
+          <div class="flex items-end gap-2 mb-4">
+            <span
+              class="text-3xl font-bold text-gray-800 dark:text-white"
+              id="creator-earnings"
+              >0</span
+            ><span class="text-sm text-gray-500 mb-1">Xu chờ nhận</span>
+          </div>
+          <div class="flex gap-3 text-xs text-gray-500 mb-4">
+            <div>
+              <span
+                class="font-bold text-gray-800 dark:text-gray-300"
+                id="my-novel-count"
+                >0</span
+              >
+              Truyện đã đăng
+            </div>
+            <div>
+              <span
+                class="font-bold text-gray-800 dark:text-gray-300"
+                id="total-views"
+                >0</span
+              >
+              Lượt đọc
+            </div>
+          </div>
+          <button
+            onclick="claimCreatorEarnings()"
+            class="w-full bg-purple-600 text-white font-bold py-2 rounded-lg hover:bg-purple-700 transition"
+          >
+            Thu Hoạch Ngay
+          </button>
+        </div>
+
+        <!-- Balance & Withdraw -->
+        <div
+          class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700"
+        >
+          <div class="text-sm text-gray-400 mb-1">Số dư khả dụng</div>
+          <div
+            class="text-4xl font-bold font-mono text-yellow-500 mb-4"
+            id="wallet-balance"
+          >
+            0
+          </div>
+          <button
+            onclick="openWithdrawModal()"
+            class="w-full bg-brand hover:bg-brand-dark text-white py-3 rounded-lg font-bold text-sm transition shadow-lg shadow-brand/20"
+          >
+            <i class="fa-solid fa-money-bill-transfer mr-1"></i> Đổi Thẻ Cào
+          </button>
+        </div>
+
+        <!-- Crafting -->
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm"
+        >
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-bold text-gray-800 dark:text-gray-200">
+              Ghép Mảnh Thẻ
+            </h3>
+            <span
+              class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded font-bold"
+              >Khó</span
+            >
+          </div>
+          <div
+            class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-3 relative overflow-hidden"
+          >
+            <div
+              id="frag-progress"
+              class="bg-blue-500 h-4 rounded-full transition-all duration-500"
+              style="width: 0%"
+            ></div>
+            <span
+              class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-gray-600 dark:text-gray-300"
+              ><span id="wallet-frag">0</span>/100 Mảnh</span
+            >
+          </div>
+          <button
+            onclick="craftCard()"
+            class="w-full border border-blue-600 text-blue-600 font-bold py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            id="craft-btn"
+            disabled
+          >
+            Ghép Thẻ 10k
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav
+      class="h-16 bg-white border-t border-gray-200 fixed bottom-0 w-full flex justify-around items-center z-30 pb-safe transition-colors dark:bg-gray-900 dark:border-gray-800"
+    >
+      <button
+        onclick="switchTab('library')"
+        class="nav-btn active flex flex-col items-center gap-1 text-brand w-full h-full justify-center"
+      >
+        <i class="fa-solid fa-house text-lg"></i
+        ><span class="text-[10px] font-bold">Thư Viện</span>
+      </button>
+      <button
+        onclick="switchTab('wheel')"
+        class="nav-btn flex flex-col items-center gap-1 text-gray-400 w-full h-full justify-center relative"
+      >
+        <div
+          class="absolute -top-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full w-12 h-12 flex items-center justify-center border-4 border-white shadow-lg transform transition active:scale-90"
+        >
+          <i
+            class="fa-solid fa-dharmachakra text-white text-xl animate-spin-slow"
+          ></i>
+        </div>
+        <span
+          class="text-[10px] font-bold mt-6 text-gray-600 dark:text-gray-400"
+          >Quay</span
+        >
+      </button>
+      <button
+        onclick="switchTab('wallet')"
+        class="nav-btn flex flex-col items-center gap-1 text-gray-400 w-full h-full justify-center"
+      >
+        <i class="fa-solid fa-user-astronaut text-lg"></i
+        ><span class="text-[10px] font-bold">Tài Khoản</span>
+      </button>
+    </nav>
+
+    <!-- MODALS SECTION -->
+
+    <!-- Leaderboard Modal -->
+    <div
+      id="leaderboard-modal"
+      class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm"
+    >
+      <div
+        class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh] dark:bg-gray-800"
+      >
+        <div
+          class="bg-gradient-to-r from-yellow-500 to-orange-500 p-4 text-white flex justify-between items-center"
+        >
+          <h3 class="font-bold text-lg">
+            <i class="fa-solid fa-trophy mr-2"></i>Bảng Xếp Hạng
+          </h3>
+          <button
+            onclick="closeModal('leaderboard-modal')"
+            class="hover:text-yellow-100"
+          >
+            ✕
+          </button>
+        </div>
+        <div
+          class="flex border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900"
+        >
+          <button
+            class="flex-1 py-3 text-sm font-bold text-yellow-600 border-b-2 border-yellow-500"
+          >
+            Top Phú Hộ
+          </button>
+          <button
+            class="flex-1 py-3 text-sm font-bold text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          >
+            Top Đại Thần
+          </button>
+        </div>
+        <div class="p-4 overflow-y-auto space-y-3" id="leaderboard-list"></div>
+      </div>
+    </div>
+
+    <!-- Studio Modal -->
+    <div
+      id="studio-modal"
+      class="modal fixed inset-0 bg-black/80 z-[60] flex items-center justify-center p-4 backdrop-blur-sm"
+    >
+      <div
+        class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] dark:bg-gray-800"
+      >
+        <div
+          class="bg-gray-900 p-4 text-white flex justify-between items-center"
+        >
+          <h3 class="font-bold">
+            <i class="fa-solid fa-pen-nib mr-2"></i>Studio Tác Giả
+          </h3>
+          <button
+            onclick="closeModal('studio-modal')"
+            class="hover:text-gray-300"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="p-5 space-y-4 overflow-y-auto">
+          <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-2">
+            <p
+              class="text-xs text-yellow-700 font-bold flex items-center gap-2"
+            >
+              <i class="fa-solid fa-robot text-lg"></i> Bot AI đang soi...
+            </p>
+          </div>
+          <input
+            id="studio-title"
+            type="text"
+            class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm outline-none text-gray-800 dark:text-white bg-white dark:bg-gray-700"
+            placeholder="Tên truyện..."
+          />
+          <div class="grid grid-cols-2 gap-4">
+            <select
+              id="studio-tag"
+              class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm text-gray-800 dark:text-white bg-white dark:bg-gray-700"
+            >
+              <option>Sáng Tác</option>
+              <option>Tiên Hiệp</option>
+              <option>Ngôn Tình</option>
+              <option>Kinh Dị</option></select
+            ><input
+              id="studio-author"
+              type="text"
+              class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm text-gray-800 dark:text-white bg-white dark:bg-gray-700"
+              value="Tôi"
+            />
+          </div>
+          <textarea
+            id="studio-content"
+            rows="10"
+            class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm outline-none text-gray-800 dark:text-white bg-white dark:bg-gray-700"
+            placeholder="Nội dung chương 1..."
+          ></textarea>
+          <button
+            id="btn-publish"
+            onclick="publishNovel()"
+            class="w-full bg-brand text-white font-bold py-3 rounded-lg hover:bg-brand-dark transition shadow-lg"
+          >
+            Đăng Tác Phẩm
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Check-in Modal -->
+    <div
+      id="checkin-modal"
+      class="modal fixed inset-0 bg-black/80 z-[60] flex items-center justify-center p-4 backdrop-blur-sm"
+    >
+      <div
+        class="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center relative overflow-hidden"
+      >
+        <div
+          class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 to-purple-500"
+        ></div>
+        <h3 class="text-xl font-bold text-gray-800 mb-1">
+          Điểm Danh Hàng Ngày
+        </h3>
+        <p class="text-xs text-gray-500 mb-6">
+          Chuỗi hiện tại:
+          <span id="streak-day" class="text-brand font-bold text-lg">1</span>
+          ngày
+        </p>
+        <div class="text-4xl text-yellow-500 mb-2 font-bold drop-shadow-md">
+          +<span id="checkin-reward">100</span> Xu
+        </div>
+        <button
+          onclick="processCheckin()"
+          class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-3 rounded-xl shadow-lg hover:scale-105 transition transform"
+        >
+          Nhận Thưởng
+        </button>
+      </div>
+    </div>
+
+    <!-- NEW: NOVEL DETAIL MODAL -->
+    <div
+      id="novel-detail-modal"
+      class="fixed inset-0 bg-white dark:bg-gray-900 z-[60] hidden flex flex-col theme-light overflow-hidden transition-colors duration-300"
+    >
+      <!-- Header -->
+      <div
+        class="h-12 border-b border-gray-200/20 flex items-center justify-between px-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm z-10 fixed top-0 w-full dark:text-white"
+      >
+        <button
+          onclick="closeModal('novel-detail-modal')"
+          class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/10 dark:hover:bg-white/10"
+        >
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <div class="font-bold text-sm">Thông Tin Truyện</div>
+        <div class="w-8"></div>
+      </div>
+
+      <!-- Content Scroll -->
+      <div class="flex-1 overflow-y-auto pt-12 pb-4">
+        <!-- Hero Section -->
+        <div class="relative h-48 bg-gray-900">
+          <div
+            class="absolute inset-0 opacity-30 bg-cover bg-center blur-sm"
+            id="detail-bg-img"
+          ></div>
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-white dark:from-gray-900 via-transparent to-transparent"
+          ></div>
+          <div class="absolute -bottom-12 left-4 flex items-end gap-4">
+            <div
+              class="w-24 h-36 rounded-lg shadow-lg overflow-hidden border-2 border-white dark:border-gray-700 bg-gray-200"
+            >
+              <img id="detail-cover" class="w-full h-full object-cover" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Info -->
+        <div class="mt-14 px-4">
+          <h2
+            class="text-2xl font-bold text-gray-900 dark:text-white leading-tight mb-1"
+            id="detail-title"
+          >
+            Tên Truyện
+          </h2>
+          <div class="text-sm text-gray-500 mb-3">
+            <i class="fa-solid fa-pen-nib text-xs"></i>
+            <span id="detail-author">Tác giả</span>
+          </div>
+
+          <div class="flex gap-2 mb-4" id="detail-tags">
+            <!-- Tags -->
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex gap-3 mb-6">
+            <button
+              onclick="readFromStart()"
+              class="flex-1 bg-brand text-white font-bold py-3 rounded-full shadow-lg hover:bg-brand-dark transition transform active:scale-95"
+            >
+              Đọc Từ Đầu
+            </button>
+            <button
+              onclick="readContinue()"
+              id="btn-continue"
+              class="flex-1 bg-yellow-50 text-yellow-600 border border-yellow-200 font-bold py-3 rounded-full hover:bg-yellow-100 transition hidden"
+            >
+              Đọc Tiếp (C<span id="continue-chap">1</span>)
+            </button>
+          </div>
+
+          <!-- Description -->
+          <div class="mb-6">
+            <h3
+              class="font-bold text-gray-800 dark:text-gray-200 mb-2 border-l-4 border-brand pl-2"
+            >
+              Giới Thiệu
+            </h3>
+            <p
+              class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-3"
+              id="detail-desc"
+              onclick="this.classList.toggle('line-clamp-3')"
+            >
+              <!-- Desc -->
+            </p>
+          </div>
+
+          <!-- Chapter List -->
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <h3
+                class="font-bold text-gray-800 dark:text-gray-200 border-l-4 border-brand pl-2"
+              >
+                Danh Sách Chương
+              </h3>
+              <span class="text-xs text-gray-400" id="chapter-count"
+                >0 chương</span
+              >
+            </div>
+            <div class="space-y-2" id="chapter-list">
+              <!-- Chapters -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- READER MODAL -->
+    <div
+      id="reader-modal"
+      class="fixed inset-0 bg-white z-[70] hidden flex flex-col theme-light"
+    >
+      <div
+        class="h-12 border-b border-gray-200/20 flex items-center justify-between px-4 reader-control flex-shrink-0 shadow-sm bg-inherit"
+      >
+        <button
+          onclick="closeReader()"
+          class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/10"
+        >
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <div
+          class="text-sm font-bold truncate max-w-[200px]"
+          id="reader-chapter-title"
+        >
+          Chapter
+        </div>
+        <button
+          onclick="document.getElementById('reader-settings').classList.toggle('hidden')"
+          class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/10"
+        >
+          <i class="fa-solid fa-font"></i>
+        </button>
+      </div>
+      <div
+        id="reader-settings"
+        class="absolute top-12 right-0 w-full bg-white border-b border-gray-200 shadow-xl p-4 z-20 hidden"
+      >
+        <div class="flex justify-center gap-4 mb-4">
+          <button
+            onclick="setTheme('theme-light')"
+            class="w-8 h-8 rounded-full bg-white border border-gray-300"
+          ></button
+          ><button
+            onclick="setTheme('theme-sepia')"
+            class="w-8 h-8 rounded-full bg-[#f5e6c8] border border-gray-300"
+          ></button
+          ><button
+            onclick="setTheme('theme-dark')"
+            class="w-8 h-8 rounded-full bg-[#111827] border border-gray-600"
+          ></button>
+        </div>
+        <input
+          type="range"
+          min="14"
+          max="24"
+          value="16"
+          class="w-full"
+          oninput="document.getElementById('reader-text').style.fontSize = this.value + 'px'"
+        />
+      </div>
+      <div
+        id="reader-scroll"
+        class="flex-1 overflow-y-auto p-6 md:p-8 font-serif leading-relaxed text-justify relative"
+        onscroll="handleReadScroll()"
+      >
+        <h2 class="text-2xl font-bold mb-6 text-center" id="reader-novel-title">
+          Novel Title
+        </h2>
+        <div
+          id="reader-text"
+          class="max-w-2xl mx-auto text-base whitespace-pre-wrap mb-10"
+        ></div>
+
+        <!-- Chapter Nav -->
+        <div
+          class="flex justify-between items-center pt-6 border-t border-gray-200/30"
+        >
+          <button
+            onclick="prevChapter()"
+            id="btn-prev-chap"
+            class="px-4 py-2 bg-gray-200 rounded text-sm font-bold hover:bg-gray-300 disabled:opacity-50 text-gray-800"
+          >
+            Chap Trước
+          </button>
+          <button
+            onclick="nextChapter()"
+            id="btn-next-chap"
+            class="px-4 py-2 bg-brand text-white rounded text-sm font-bold hover:bg-brand-dark disabled:opacity-50"
+          >
+            Chap Sau
+          </button>
+        </div>
+
+        <div class="h-32"></div>
+      </div>
+      <div
+        class="absolute bottom-6 right-6 bg-brand text-white px-4 py-2 rounded-full shadow-lg text-xs font-bold flex items-center gap-2 transform translate-y-20 transition duration-300"
+        id="earn-badge"
+      >
+        <div class="w-2 h-2 bg-white rounded-full animate-ping"></div>
+        +10 Xu
+      </div>
+    </div>
+
+    <!-- Withdraw Modal -->
+    <div
+      id="withdraw-modal"
+      class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm"
+    >
+      <div
+        class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-0 overflow-hidden"
+      >
+        <div
+          class="bg-gray-900 p-4 text-white flex justify-between items-center"
+        >
+          <h3 class="font-bold text-lg">
+            <i class="fa-solid fa-store mr-2"></i>Cửa Hàng Đổi Quà
+          </h3>
+          <button
+            onclick="closeModal('withdraw-modal')"
+            class="hover:text-gray-300"
+          >
+            ✕
+          </button>
+        </div>
+        <div class="p-5 space-y-4 max-h-[80vh] overflow-y-auto">
+          <div
+            class="bg-yellow-50 border-l-4 border-yellow-400 p-3 text-xs text-yellow-700"
+          >
+            <p class="font-bold mb-1">
+              <i class="fa-solid fa-clock"></i> Lưu ý quan trọng:
+            </p>
+            <p>
+              Admin sẽ trả thẻ vào <strong>20h - 22h hàng ngày</strong> qua
+              Email.
+            </p>
+          </div>
+          <div class="flex border-b border-gray-200">
+            <button
+              onclick="switchWithdrawType('phone')"
+              id="tab-phone"
+              class="flex-1 pb-2 text-brand border-b-2 border-brand font-bold text-sm transition"
+            >
+              Thẻ Điện Thoại
+            </button>
+            <button
+              onclick="switchWithdrawType('game')"
+              id="tab-game"
+              class="flex-1 pb-2 text-gray-400 font-bold text-sm transition hover:text-gray-600"
+            >
+              Thẻ Game
+            </button>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-500 mb-2"
+              >Nhà cung cấp</label
+            >
+            <div id="provider-grid" class="grid grid-cols-3 gap-2"></div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-500 mb-1"
+              >Mệnh giá</label
+            ><select
+              id="withdraw-amount"
+              class="w-full border border-gray-300 rounded-lg p-2 text-sm text-gray-800 focus:border-brand outline-none"
+            >
+              <option value="1000000">10.000đ (1M Xu)</option>
+              <option value="2000000">20.000đ (2M Xu)</option>
+              <option value="5000000">50.000đ (5M Xu)</option>
+              <option value="10000000">100.000đ (10M Xu)</option>
+              <option value="20000000">200.000đ (20M Xu)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-500 mb-1"
+              >Email nhận mã thẻ <span class="text-red-500">*</span></label
+            ><input
+              type="email"
+              id="withdraw-email"
+              class="w-full border border-gray-300 rounded-lg p-2 text-sm text-gray-800 focus:border-brand outline-none"
+              placeholder="ví_dụ@gmail.com"
+            />
+          </div>
+          <button
+            onclick="processWithdraw()"
+            class="w-full bg-brand text-white font-bold py-3 rounded-lg hover:bg-brand-dark shadow-lg transition transform active:scale-95"
+          >
+            Xác Nhận Đổi
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const apiKey = "";
+      let currentAuthMode = "login";
+      let currentUser = null;
+      let userData = null;
+
+      // --- DATA STRUCTURE UPDATE (CHAPTERS) ---
+      let novels = JSON.parse(localStorage.getItem("nr_novels_global_v2")) || [
+        {
+          id: 1,
+          title: "Đại Quản Gia Là Ma Hoàng",
+          author: "Dạ Kiêu",
+          tags: ["Huyền Huyễn", "Trọng Sinh"],
+          description:
+            "Ma Hoàng Trác Nhất Phàm vì có được Thượng Cổ Ma Đế truyền thừa mà rước lấy họa sát thân...",
+          chapters: [
+            {
+              title: "Chương 1: Ma Hoàng Trọng Sinh",
+              content:
+                "Thánh Vực, trên đỉnh Ma Hoàng Phong. Trác Nhất Phàm nhìn xuống quần hùng...\n\n(Nội dung dài chương 1...)",
+            },
+            {
+              title: "Chương 2: Lạc Gia",
+              content: "Trác Phàm tỉnh lại trong thân xác một gia nô...",
+            },
+            {
+              title: "Chương 3: Quản Gia",
+              content: "Hắn quyết định làm quản gia cho Lạc gia...",
+            },
+          ],
+        },
+        {
+          id: 2,
+          title: "Tổng Tài Tại Thượng",
+          author: "Khương Tiểu Nha",
+          tags: ["Ngôn Tình"],
+          description:
+            "Câu chuyện tình yêu đầy trắc trở giữa Cung Âu và Thời Tiểu Niệm...",
+          chapters: [
+            {
+              title: "Chương 1: Đêm Định Mệnh",
+              content: "Trong căn phòng tối tăm...",
+            },
+            { title: "Chương 2: Gặp Gỡ", content: "Ba năm sau..." },
+          ],
+        },
+      ];
+
+      localStorage.setItem("nr_novels_global_v2", JSON.stringify(novels));
+
+      let currentCategory = "all";
+      let currentSearch = "";
+      let isGoldenHour = false;
+
+      // Reader State
+      let activeNovel = null;
+      let currentChapterIndex = 0;
+      let readInterval,
+        isScrolling = false,
+        lastScrollTop = 0;
+      let batteryBonus = 1;
+
+      // --- INIT ---
+      async function initBattery() {
+        if ("getBattery" in navigator) {
+          const batt = await navigator.getBattery();
+          updateBatteryUI(batt);
+          batt.addEventListener("levelchange", () => updateBatteryUI(batt));
+          batt.addEventListener("chargingchange", () => updateBatteryUI(batt));
+        }
+      }
+      function updateBatteryUI(batt) {
+        const level = Math.floor(batt.level * 100);
+        const isCharging = batt.charging;
+        const badge = document.getElementById("battery-badge");
+        const text = document.getElementById("battery-text");
+        if (badge) {
+          badge.classList.remove("hidden");
+          if (isCharging || level > 80) {
+            batteryBonus = 1.2;
+            text.innerText = isCharging ? `⚡ ${level}%` : `${level}%`;
+            badge.className =
+              "text-[10px] font-bold px-2 py-1 rounded bg-green-100 text-green-700 flex items-center gap-1 transition-all border border-green-200";
+          } else if (level < 20) {
+            batteryBonus = 0.5;
+            text.innerText = `${level}%`;
+            badge.className =
+              "text-[10px] font-bold px-2 py-1 rounded bg-red-100 text-red-700 flex items-center gap-1 transition-all border border-red-200";
+          } else {
+            batteryBonus = 1;
+            text.innerText = `${level}%`;
+            badge.className =
+              "text-[10px] font-bold px-2 py-1 rounded bg-gray-100 text-gray-600 flex items-center gap-1 transition-all border border-gray-200";
+          }
+        }
+      }
+
+      // --- UTILS ---
+      function showToast(msg, type = "success") {
+        const container = document.getElementById("toast-container");
+        const div = document.createElement("div");
+        div.className = `toast ${type}`;
+        div.innerHTML = `<span>${msg}</span> <i class="fa-solid fa-${
+          type === "success" ? "check" : "circle-exclamation"
+        }"></i>`;
+        container.appendChild(div);
+        setTimeout(() => div.remove(), 3000);
+      }
+
+      async function callGemini(prompt) {
+        if (!apiKey) {
+          // Simulation mode if no API Key
+          console.warn("Simulating AI Check...");
+          return JSON.stringify({ safe: true });
+        }
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+          const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+          });
+          const data = await response.json();
+          return data.candidates?.[0]?.content?.parts?.[0]?.text;
+        } catch (error) {
+          console.error(error);
+          return null;
+        }
+      }
+
+      // --- AUTH ---
+      function switchAuthMode(mode) {
+        currentAuthMode = mode;
+        document.getElementById("auth-username").value = "";
+        document.getElementById("auth-password").value = "";
+        const regExtra = document.getElementById("register-extra");
+        document.getElementById("auth-msg").innerText = "";
+        if (mode === "login") {
+          document.getElementById("auth-btn").innerText = "Đăng Nhập Ngay";
+          regExtra.classList.add("hidden");
+          document.getElementById("tab-login").className =
+            "flex-1 pb-2 text-brand border-b-2 border-brand font-bold text-sm transition";
+          document.getElementById("tab-register").className =
+            "flex-1 pb-2 text-gray-400 font-bold text-sm hover:text-gray-600 transition";
+        } else {
+          document.getElementById("auth-btn").innerText = "Đăng Ký Tài Khoản";
+          regExtra.classList.remove("hidden");
+          document.getElementById("tab-register").className =
+            "flex-1 pb-2 text-brand border-b-2 border-brand font-bold text-sm transition";
+          document.getElementById("tab-login").className =
+            "flex-1 pb-2 text-gray-400 font-bold text-sm hover:text-gray-600 transition";
+        }
+      }
+
+      function handleAuth(e) {
+        e.preventDefault();
+        const userIn = document.getElementById("auth-username").value.trim();
+        const passIn = document.getElementById("auth-password").value.trim();
+        const msg = document.getElementById("auth-msg");
+        const db = JSON.parse(localStorage.getItem("nr_accounts")) || {};
+
+        if (currentAuthMode === "login") {
+          if (db[userIn] && db[userIn] === passIn) {
+            localStorage.setItem("nr_session", userIn);
+            initGame(userIn);
+            document.getElementById("auth-modal").classList.add("hidden");
+          } else msg.innerText = "Sai thông tin đăng nhập!";
+        } else {
+          if (
+            passIn !== document.getElementById("auth-confirm-pass").value.trim()
+          ) {
+            msg.innerText = "Mật khẩu không khớp!";
+            return;
+          }
+          if (db[userIn]) {
+            msg.innerText = "Tên tài khoản đã tồn tại!";
+            return;
+          }
+          db[userIn] = passIn;
+          localStorage.setItem("nr_accounts", JSON.stringify(db));
+          const defaultData = {
+            coin: 0,
+            fragments: 0,
+            history: [],
+            lastLogin: null,
+            streak: 0,
+            creatorEarnings: 0,
+            myNovels: [],
+            readStats: {},
+            tree: { stage: 0, plantedAt: Date.now(), waterCount: 0 },
+            comments: [],
+            vip: false,
+          };
+          localStorage.setItem(
+            "nr_data_" + userIn,
+            JSON.stringify(defaultData)
+          );
+          localStorage.setItem("nr_session", userIn);
+          initGame(userIn);
+          document.getElementById("auth-modal").classList.add("hidden");
+        }
+      }
+
+      function initGame(username) {
+        currentUser = username;
+        userData = JSON.parse(localStorage.getItem("nr_data_" + username));
+        if (!userData.readStats) userData.readStats = {};
+
+        const headerUser = document.getElementById("header-username");
+        if (headerUser) headerUser.innerText = username;
+        const headerAvatar = document.getElementById("header-avatar");
+        if (headerAvatar)
+          headerAvatar.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`;
+
+        renderNovels();
+        updateWallet();
+        updateTree();
+        checkRealTimeEvents();
+        initBattery();
+        setInterval(checkRealTimeEvents, 60000);
+        const today = new Date().toDateString();
+        if (userData.lastLogin !== today)
+          setTimeout(() => openCheckinModal(), 1000);
+        const bannerStreak = document.getElementById("banner-streak");
+        if (bannerStreak) bannerStreak.innerText = userData.streak || 0;
+      }
+
+      // --- REAL-TIME & TREE ---
+      function checkRealTimeEvents() {
+        const hour = new Date().getHours();
+        if (hour >= 18 || hour < 6) document.body.classList.add("night-mode");
+        else document.body.classList.remove("night-mode");
+        const isGold = hour === 12 || hour === 20;
+        if (isGold !== isGoldenHour) {
+          isGoldenHour = isGold;
+          const b = document.getElementById("golden-hour-badge");
+          if (b)
+            isGold ? b.classList.remove("hidden") : b.classList.add("hidden");
+        }
+        updateTree();
+      }
+      function updateTree() {
+        if (!userData || !userData.tree) return;
+        const tree = userData.tree;
+        const hoursPassed = (Date.now() - tree.plantedAt) / 3600000;
+        let progress = 0,
+          visual = "🌱",
+          status = "Đang nảy mầm...";
+        if (tree.stage === 0) {
+          const p =
+            Math.min(hoursPassed, 1) * 50 +
+            Math.min(tree.waterCount / 10, 1) * 50;
+          if (p >= 100) {
+            tree.stage = 1;
+            tree.plantedAt = Date.now();
+            tree.waterCount = 0;
+          }
+          progress = p;
+        } else if (tree.stage === 1) {
+          visual = "🌿";
+          status = "Cây non";
+          const p =
+            Math.min(hoursPassed / 3, 1) * 50 +
+            Math.min(tree.waterCount / 30, 1) * 50;
+          if (p >= 100) {
+            tree.stage = 2;
+            tree.plantedAt = Date.now();
+            tree.waterCount = 0;
+          }
+          progress = p;
+        } else if (tree.stage === 2) {
+          visual = "🌳";
+          status = "Sắp thu hoạch";
+          const p =
+            Math.min(hoursPassed / 5, 1) * 50 +
+            Math.min(tree.waterCount / 50, 1) * 50;
+          if (p >= 100) tree.stage = 3;
+          progress = p;
+        } else {
+          visual = "🍎";
+          status = "Đã chín!";
+          progress = 100;
+        }
+
+        const visEl = document.getElementById("tree-visual");
+        if (visEl) visEl.innerText = visual;
+        const statEl = document.getElementById("tree-status");
+        if (statEl) statEl.innerText = status;
+        const progEl = document.getElementById("tree-progress");
+        if (progEl) progEl.style.width = `${progress}%`;
+        const waterEl = document.getElementById("water-count");
+        if (waterEl) waterEl.innerText = `💧 ${tree.waterCount}`;
+
+        const btn = document.getElementById("btn-harvest");
+        if (btn) {
+          if (tree.stage === 3) {
+            btn.disabled = false;
+            btn.classList.remove("opacity-50", "cursor-not-allowed");
+            btn.classList.add("animate-pulse");
+          } else {
+            btn.disabled = true;
+            btn.classList.add("opacity-50", "cursor-not-allowed");
+            btn.classList.remove("animate-pulse");
+          }
+        }
+        saveUserData();
+      }
+      function waterTree() {
+        if (userData.tree.stage < 3) {
+          userData.tree.waterCount++;
+          updateTree();
+          showToast("Đã tưới nước!");
+        }
+      }
+      function harvestTree() {
+        if (userData.tree.stage === 3) {
+          const reward = Math.floor(Math.random() * 5000) + 1000;
+          userData.coin += reward;
+          showToast(`Thu hoạch thành công! +${reward} Xu`);
+          userData.tree = { stage: 0, plantedAt: Date.now(), waterCount: 0 };
+          updateWallet();
+          updateTree();
+        }
+      }
+
+      function saveUserData() {
+        if (currentUser)
+          localStorage.setItem(
+            "nr_data_" + currentUser,
+            JSON.stringify(userData)
+          );
+      }
+
+      function updateWallet() {
+        if (!userData) return;
+        const els = {
+          coin: ["user-coin", "wallet-balance", "wheel-balance"],
+          frag: ["frag-count", "wallet-frag"],
+        };
+        els.coin.forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.innerText = userData.coin.toLocaleString();
+        });
+        els.frag.forEach((id) => {
+          const elems = document.querySelectorAll(`#${id}`);
+          elems.forEach((e) => (e.innerText = userData.fragments));
+        });
+        const fp = document.getElementById("frag-progress");
+        if (fp) fp.style.width = `${Math.min(userData.fragments, 100)}%`;
+        const cb = document.getElementById("craft-btn");
+        if (cb) cb.disabled = userData.fragments < 100;
+        updateCreatorUI();
+        saveUserData();
+      }
+
+      function updateCreatorUI() {
+        if (!userData) return;
+        const earnEl = document.getElementById("creator-earnings");
+        if (earnEl)
+          earnEl.innerText = userData.creatorEarnings.toLocaleString();
+        const countEl = document.getElementById("my-novel-count");
+        if (countEl) countEl.innerText = userData.myNovels.length;
+        const viewEl = document.getElementById("total-views");
+        if (viewEl)
+          viewEl.innerText = (
+            userData.myNovels.length * 1250 +
+            userData.creatorEarnings
+          ).toLocaleString();
+      }
+
+      // --- NOVEL DETAILS & READER (NEW) ---
+      function openNovelDetail(id) {
+        const novel = novels.find((n) => n.id === id);
+        activeNovel = novel;
+
+        document.getElementById("detail-title").innerText = novel.title;
+        document.getElementById("detail-author").innerText = novel.author;
+        document.getElementById("detail-desc").innerText =
+          novel.description || "Chưa có mô tả.";
+        document.getElementById(
+          "detail-cover"
+        ).src = `https://placehold.co/200x300/10b981/ffffff?text=${encodeURIComponent(
+          novel.title[0]
+        )}`;
+        document.getElementById(
+          "detail-bg-img"
+        ).style.backgroundImage = `url('https://placehold.co/200x300/10b981/ffffff?text=${encodeURIComponent(
+          novel.title[0]
+        )}')`;
+
+        document.getElementById("detail-tags").innerHTML = novel.tags
+          .map(
+            (t) =>
+              `<span class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs text-gray-600 dark:text-gray-300 font-bold">${t}</span>`
+          )
+          .join("");
+        document.getElementById(
+          "chapter-count"
+        ).innerText = `${novel.chapters.length} chương`;
+
+        const lastChap = userData.readStats[id];
+        const continueBtn = document.getElementById("btn-continue");
+        if (lastChap !== undefined) {
+          continueBtn.classList.remove("hidden");
+          document.getElementById("continue-chap").innerText = lastChap + 1;
+        } else {
+          continueBtn.classList.add("hidden");
+        }
+
+        const chapList = document.getElementById("chapter-list");
+        chapList.innerHTML = novel.chapters
+          .map(
+            (c, i) => `
+                <div onclick="openReader(${id}, ${i})" class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex justify-between items-center border border-gray-100 dark:border-gray-700 transition">
+                    <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">${
+                      c.title
+                    }</span>
+                    ${
+                      i === lastChap
+                        ? '<span class="text-[10px] bg-brand text-white px-2 py-0.5 rounded">Đang đọc</span>'
+                        : ""
+                    }
+                </div>
+            `
+          )
+          .join("");
+
+        document
+          .getElementById("novel-detail-modal")
+          .classList.remove("hidden");
+      }
+
+      function readFromStart() {
+        openReader(activeNovel.id, 0);
+      }
+      function readContinue() {
+        const lastChap = userData.readStats[activeNovel.id] || 0;
+        openReader(activeNovel.id, lastChap);
+      }
+
+      function openReader(novelId, chapterIndex) {
+        document.getElementById("novel-detail-modal").classList.add("hidden");
+        const novel = novels.find((n) => n.id === novelId);
+        activeNovel = novel;
+        currentChapterIndex = chapterIndex;
+        const chapter = novel.chapters[chapterIndex];
+
+        document.getElementById("reader-novel-title").innerText = novel.title;
+        document.getElementById("reader-chapter-title").innerText = `Chương ${
+          chapterIndex + 1
+        }`;
+        document.getElementById("reader-text").innerText =
+          chapter.content + "\n\n" + chapter.content;
+
+        document.getElementById("btn-prev-chap").disabled = chapterIndex === 0;
+        document.getElementById("btn-next-chap").disabled =
+          chapterIndex === novel.chapters.length - 1;
+
+        userData.readStats[novelId] = chapterIndex;
+        saveUserData();
+        document.getElementById("reader-modal").classList.remove("hidden");
+
+        clearInterval(readInterval);
+        readInterval = setInterval(() => {
+          if (isScrolling) {
+            const bonus = Math.floor((isGoldenHour ? 20 : 10) * batteryBonus);
+            userData.coin += bonus;
+            updateWallet();
+            const b = document.getElementById("earn-badge");
+            b.innerHTML = `<div class="w-2 h-2 bg-white rounded-full animate-ping"></div> +${bonus} Xu`;
+            b.classList.remove("translate-y-20");
+            setTimeout(() => b.classList.add("translate-y-20"), 2000);
+            isScrolling = false;
+          }
+        }, 5000);
+      }
+
+      function nextChapter() {
+        if (currentChapterIndex < activeNovel.chapters.length - 1) {
+          openReader(activeNovel.id, currentChapterIndex + 1);
+          document.getElementById("reader-scroll").scrollTop = 0;
+        }
+      }
+      function prevChapter() {
+        if (currentChapterIndex > 0) {
+          openReader(activeNovel.id, currentChapterIndex - 1);
+          document.getElementById("reader-scroll").scrollTop = 0;
+        }
+      }
+      function handleReadScroll() {
+        const st = document.getElementById("reader-scroll").scrollTop;
+        if (Math.abs(st - lastScrollTop) > 50) isScrolling = true;
+        lastScrollTop = st;
+      }
+      function closeReader() {
+        document.getElementById("reader-modal").classList.add("hidden");
+        clearInterval(readInterval);
+      }
+
+      // --- UI HELPERS ---
+      function renderNovels() {
+        const list = document.getElementById("novel-list");
+        if (!list) return;
+        const filtered = novels.filter((n) => {
+          const matchCat =
+            currentCategory === "all" || n.tags.includes(currentCategory);
+          const matchSearch =
+            n.title.toLowerCase().includes(currentSearch.toLowerCase()) ||
+            n.author.toLowerCase().includes(currentSearch.toLowerCase());
+          return matchCat && matchSearch;
+        });
+        list.innerHTML = filtered
+          .map(
+            (n) => `
+                <div onclick="openNovelDetail(${
+                  n.id
+                })" class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex gap-3 cursor-pointer hover:shadow-md transition">
+                    <div class="w-16 h-24 bg-gray-200 rounded-lg flex-shrink-0 overflow-hidden"><img src="https://placehold.co/200x300/10b981/ffffff?text=${encodeURIComponent(
+                      n.title[0]
+                    )}" class="w-full h-full object-cover"></div>
+                    <div class="flex-1 flex flex-col justify-center">
+                        <h3 class="font-bold text-gray-800 dark:text-white line-clamp-2 text-sm mb-1">${
+                          n.title
+                        }</h3>
+                        <div class="text-xs text-gray-500 mb-1"><i class="fa-solid fa-pen-nib text-[10px]"></i> ${
+                          n.author
+                        }</div>
+                        <div class="flex gap-1 mt-1">${n.tags
+                          .map(
+                            (t) =>
+                              `<span class="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 text-[10px] rounded">${t}</span>`
+                          )
+                          .join("")}</div>
+                    </div>
+                </div>`
+          )
+          .join("");
+      }
+
+      // ... (Rest of existing functions: filterNovels, handleSearch, switchTab, logout, toggleUserMenu, open/close Modals, etc.)
+      function filterNovels(cat) {
+        currentCategory = cat;
+        document
+          .querySelectorAll(".category-btn")
+          .forEach(
+            (b) =>
+              (b.className =
+                b.dataset.cat === cat
+                  ? "category-btn active px-4 py-1.5 bg-brand text-white rounded-full text-xs font-bold whitespace-nowrap shadow-md transition transform active:scale-95"
+                  : "category-btn px-4 py-1.5 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-full text-xs font-bold whitespace-nowrap hover:bg-gray-50 transition")
+          );
+        renderNovels();
+      }
+      function handleSearch(val) {
+        currentSearch = val;
+        renderNovels();
+      }
+      function switchTab(id) {
+        ["library", "wheel", "wallet"].forEach((t) =>
+          document.getElementById("tab-" + t).classList.add("hidden")
+        );
+        document.getElementById("tab-" + id).classList.remove("hidden");
+      }
+      function logout() {
+        localStorage.removeItem("nr_session");
+        location.reload();
+      }
+      function toggleUserMenu() {
+        document.getElementById("user-menu").classList.toggle("hidden");
+      }
+
+      function openStudioModal() {
+        const el = document.getElementById("studio-modal");
+        el.classList.remove("hidden");
+        setTimeout(() => el.classList.add("active"), 10);
+      }
+      function openCheckinModal() {
+        const today = new Date().toDateString();
+        if (userData.lastLogin) {
+          const diff =
+            (new Date(today) - new Date(userData.lastLogin)) / 86400000;
+          if (diff === 1) userData.streak++;
+          else if (diff > 1) userData.streak = 1;
+        } else userData.streak = 1;
+        document.getElementById("streak-day").innerText = userData.streak;
+        document.getElementById("checkin-reward").innerText =
+          100 * userData.streak;
+        if (userData.lastLogin !== today) {
+          const el = document.getElementById("checkin-modal");
+          el.classList.remove("hidden");
+          setTimeout(() => el.classList.add("active"), 10);
+        } else showToast("Đã điểm danh hôm nay!", "info");
+      }
+      function closeModal(id) {
+        const el = document.getElementById(id);
+        el.classList.remove("active");
+        setTimeout(() => el.classList.add("hidden"), 300);
+      }
+      function processCheckin() {
+        userData.coin += 100 * userData.streak;
+        userData.lastLogin = new Date().toDateString();
+        updateWallet();
+        closeModal("checkin-modal");
+        showToast("Điểm danh thành công!");
+      }
+      function spinWheel() {
+        if (userData.coin < 2000) {
+          showToast("Cần 2000 Xu để quay!", "error");
+          return;
+        }
+        userData.coin -= 2000;
+        updateWallet();
+        const w = document.getElementById("wheel");
+        w.style.transform = `rotate(${3600 + Math.random() * 360}deg)`;
+        setTimeout(() => {
+          w.style.transition = "none";
+          w.style.transform = `rotate(${0}deg)`;
+          setTimeout(() => (w.style.transition = ""), 50);
+          const r = Math.random();
+          if (r > 0.95) {
+            userData.coin += 10000;
+            showToast("NỔ HŨ! +10.000 Xu");
+          } else if (r > 0.8) {
+            userData.fragments += 1;
+            showToast("Nhận 1 Mảnh Thẻ!");
+          } else if (r > 0.5) {
+            userData.coin += 500;
+            showToast("Khuyến khích +500 Xu");
+          } else showToast("Chúc may mắn lần sau!");
+          updateWallet();
+        }, 4000);
+      }
+      async function publishNovel() {
+        const title = document.getElementById("studio-title").value;
+        const content = document.getElementById("studio-content").value;
+        const author = document.getElementById("studio-author").value;
+        const tag = document.getElementById("studio-tag").value;
+        if (!title || !content) {
+          showToast("Thiếu thông tin!", "error");
+          return;
+        }
+        const btn = document.getElementById("btn-publish");
+        btn.disabled = true;
+        btn.innerHTML =
+          '<i class="fa-solid fa-spinner fa-spin"></i> Đang duyệt...';
+        const prompt = `Check safety: Title: ${title}, Content: ${content.substring(
+          0,
+          500
+        )}. JSON: {"safe": boolean}`;
+        const res = await callGemini(prompt);
+        let safe = true;
+        if (res) {
+          try {
+            safe = JSON.parse(res.replace(/```json|```/g, "").trim()).safe;
+          } catch (e) {}
+        }
+        btn.disabled = false;
+        btn.innerHTML = "Đăng Tác Phẩm";
+        if (!safe) {
+          showToast("Nội dung vi phạm tiêu chuẩn!", "error");
+          return;
+        }
+        // New structure push
+        novels.unshift({
+          id: Date.now(),
+          title,
+          author,
+          description: content.substring(0, 100),
+          tags: [tag, "Sáng Tác"],
+          chapters: [{ title: "Chương 1", content: content }],
+        });
+        userData.myNovels.push(Date.now());
+        saveUserData();
+        localStorage.setItem("nr_novels_global_v2", JSON.stringify(novels));
+        closeModal("studio-modal");
+        showToast("Đăng truyện thành công!");
+        renderNovels();
+      }
+      function claimCreatorEarnings() {
+        if (userData.creatorEarnings > 0) {
+          userData.coin += userData.creatorEarnings;
+          userData.creatorEarnings = 0;
+          updateWallet();
+          showToast("Đã thu hoạch!");
+        } else showToast("Chưa có thu nhập!", "info");
+      }
+      function craftCard() {
+        if (userData.fragments >= 100) {
+          userData.fragments -= 100;
+          showToast("Ghép thành công!");
+          updateWallet();
+        }
+      }
+      function openWithdrawModal() {
+        const el = document.getElementById("withdraw-modal");
+        el.classList.remove("hidden");
+        setTimeout(() => el.classList.add("active"), 10);
+        switchWithdrawType("phone");
+      }
+      function switchWithdrawType(type) {
+        currentWithdrawType = type;
+        selectedProvider = "";
+        document.getElementById("tab-phone").className =
+          type === "phone"
+            ? "flex-1 pb-2 text-brand border-b-2 border-brand font-bold text-sm transition"
+            : "flex-1 pb-2 text-gray-400 font-bold text-sm transition";
+        document.getElementById("tab-game").className =
+          type === "game"
+            ? "flex-1 pb-2 text-brand border-b-2 border-brand font-bold text-sm transition"
+            : "flex-1 pb-2 text-gray-400 font-bold text-sm transition";
+        document.getElementById("provider-grid").innerHTML = PROVIDERS[type]
+          .map(
+            (p) =>
+              `<button onclick="selectProvider('${p}', this)" class="provider-btn border border-gray-200 rounded py-2 text-xs font-bold text-gray-600 hover:bg-gray-50 transition">${p}</button>`
+          )
+          .join("");
+      }
+      function selectProvider(name, btn) {
+        selectedProvider = name;
+        document
+          .querySelectorAll(".provider-btn")
+          .forEach(
+            (b) =>
+              (b.className =
+                "provider-btn border border-gray-200 rounded py-2 text-xs font-bold text-gray-600 hover:bg-gray-50 transition")
+          );
+        btn.className =
+          "provider-btn active border border-brand bg-brand/10 text-brand py-2 rounded text-xs font-bold transition";
+      }
+      function processWithdraw() {
+        if (!selectedProvider) {
+          showToast("Chọn nhà mạng!", "error");
+          return;
+        }
+        if (!document.getElementById("withdraw-email").value.includes("@")) {
+          showToast("Email không hợp lệ!", "error");
+          return;
+        }
+        const amt = parseInt(document.getElementById("withdraw-amount").value);
+        if (userData.coin >= amt) {
+          userData.coin -= amt;
+          updateWallet();
+          closeModal("withdraw-modal");
+          showToast("Đổi quà thành công! Check Email tối nay.");
+        } else showToast("Không đủ tiền!", "error");
+      }
+      function openLeaderboard() {
+        const list = document.getElementById("leaderboard-list");
+        const el = document.getElementById("leaderboard-modal");
+        let lb = [
+          { name: "Đại Gia 1", coin: 99000000 },
+          { name: "MeoMeo", coin: 54000000 },
+          { name: "HackerLor", coin: 12000000 },
+          { name: currentUser, coin: userData.coin },
+        ];
+        lb.sort((a, b) => b.coin - a.coin);
+        list.innerHTML = lb
+          .map(
+            (u, i) =>
+              `<div class="flex justify-between items-center p-3 rounded-lg ${
+                u.name === currentUser
+                  ? "bg-yellow-50 border border-yellow-200"
+                  : "bg-gray-50"
+              }"><div class="flex items-center gap-3"><span class="font-bold w-6 text-center ${
+                i < 3 ? "text-yellow-500 text-xl" : "text-gray-400"
+              }">${
+                i < 3 ? ["🥇", "🥈", "🥉"][i] : i + 1
+              }</span><span class="font-bold text-sm ${
+                u.name === currentUser ? "text-brand" : "text-gray-700"
+              }">${
+                u.name
+              }</span></div><span class="text-xs font-mono font-bold text-gray-500">${u.coin.toLocaleString()} Xu</span></div>`
+          )
+          .join("");
+        el.classList.remove("hidden");
+      }
+      function saveUserData() {
+        if (currentUser)
+          localStorage.setItem(
+            "nr_data_" + currentUser,
+            JSON.stringify(userData)
+          );
+      }
+      function updateWallet() {
+        if (!userData) return;
+        const els = {
+          coin: ["user-coin", "wallet-balance", "wheel-balance"],
+          frag: ["frag-count", "wallet-frag"],
+        };
+        els.coin.forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.innerText = userData.coin.toLocaleString();
+        });
+        els.frag.forEach((id) => {
+          const elems = document.querySelectorAll(`#${id}`);
+          elems.forEach((e) => (e.innerText = userData.fragments));
+        });
+        const fp = document.getElementById("frag-progress");
+        if (fp) fp.style.width = `${Math.min(userData.fragments, 100)}%`;
+        const cb = document.getElementById("craft-btn");
+        if (cb) cb.disabled = userData.fragments < 100;
+        updateCreatorUI();
+        saveUserData();
+      }
+      function updateCreatorUI() {
+        if (!userData) return;
+        const earnEl = document.getElementById("creator-earnings");
+        if (earnEl)
+          earnEl.innerText = userData.creatorEarnings.toLocaleString();
+        const countEl = document.getElementById("my-novel-count");
+        if (countEl) countEl.innerText = userData.myNovels.length;
+        const viewEl = document.getElementById("total-views");
+        if (viewEl)
+          viewEl.innerText = (
+            userData.myNovels.length * 1250 +
+            userData.creatorEarnings
+          ).toLocaleString();
+      }
+      function showToast(msg, type = "success") {
+        const container = document.getElementById("toast-container");
+        const div = document.createElement("div");
+        div.className = `toast ${type}`;
+        div.innerHTML = `<span>${msg}</span> <i class="fa-solid fa-${
+          type === "success" ? "check" : "circle-exclamation"
+        }"></i>`;
+        container.appendChild(div);
+        setTimeout(() => div.remove(), 3000);
+      }
+      function setTheme(t) {
+        document.getElementById(
+          "reader-modal"
+        ).className = `fixed inset-0 z-50 flex flex-col transition-colors duration-300 ${t}`;
+      }
+
+      const sessionUser = localStorage.getItem("nr_session");
+      if (sessionUser) {
+        document.getElementById("auth-modal").classList.add("hidden");
+        initGame(sessionUser);
+      }
+    </script>
+  </body>
+</html>
